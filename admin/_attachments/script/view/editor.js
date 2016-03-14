@@ -75,8 +75,6 @@ module.exports = Backbone.View.extend({
          breaks: true,
          sanitize: true
       });
-
-
    },
    render: function() {
       var editorTemplate = Handlebars.compile(this.editorTemplate);
@@ -200,7 +198,7 @@ module.exports = Backbone.View.extend({
             };
 
             // append at drop point the markdown for the image
-            imgMarkdown = "![Alt text](asset/image/" + file.name + " \"Optional title\")";
+            imgMarkdown = "![Alt text](/" + this.options.adminDBName + "/_design/chlog/image/" + file.name + " \"Optional title\")";
             pasteHtmlAtCaret(imgMarkdown, true);
          }
       }

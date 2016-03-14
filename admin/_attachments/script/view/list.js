@@ -58,12 +58,11 @@ module.exports = Backbone.View.extend({
       this.$el.html(listTemplate(this.collection.toJSON()));
 
       this.editorView = new EditorView({
+         el: '#main',
          adminDBName: this.options.adminDBName,
          publicDBName: this.options.publicDBName,
          hostName: this.options.hostName
       });
-
-      this.editorView.setElement(this.$el.find('.content'));
 
       // Masonry
       this.masonry = new this.Masonry(document.querySelector('#list-view-list'), {
