@@ -100,6 +100,8 @@ module.exports = Backbone.View.extend({
          doc.published = Date.now();
          // update post in database
          this.db.put(doc, this.handleDBDocUpdate);
+
+         delete doc._rev;
          // push post to public database
          this.publicDB.put(doc);
       }.bind(this));

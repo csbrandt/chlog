@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var PouchDB = require('pouchdb');
 var MainView = require('./view/main');
 var PostView = require('./view/post');
 
@@ -11,18 +12,14 @@ module.exports = Backbone.Router.extend({
       'post/:id': 'post'
    },
    initialize: function() {
-      /*
       var publicDB = new PouchDB(publicDBName);
 
       // initial sync with host database
-      // continually sync to local public from remote
-      PouchDB.sync(host + '/' + publicDBName, publicDBName,
+      // sync to local public from remote
+      PouchDB.sync(host + '/' + publicDBName, publicDBName).on('error', function(info)
       {
-         live: true
-      }).on('error', function(info)
-      {
-         // handle complete
-      });*/
+
+      });
    },
    index: function() {
       if (!this.mainView) {
