@@ -1,0 +1,17 @@
+[{
+       "from": "/",
+       "to": "index.html",
+       "method": "GET"
+}, {
+	    "from": "/asset/*",
+	    "to": "/*",
+	    "method": "*"
+}, {
+       "from": "/:dbname/*",
+	    "to": "../../../:dbname/*",
+	    "method": "*"
+}, {
+       "from": "/:dbname",
+	    "to": "../../../:dbname",
+	    "method": "*"
+}]

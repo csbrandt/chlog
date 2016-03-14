@@ -1,0 +1,21 @@
+<div class="wrap">
+   <div class="top-menu">
+      <nav class="ink-navigation">
+         <ul class="menu horizontal shadowed white">
+            <li class="active">
+               <a href="#"></a>
+            </li>
+
+         </ul>
+      </nav>
+   </div>
+
+   <div id="overlay" class="ink-grid"></div>
+   <div id="content" class="ink-grid">
+      <div class="column-group half-horizontal-gutters">
+         {{#each this}} {{> tileTemplate}} {{/each}}
+      </div>
+   </div>
+
+   <div class="push"></div>
+</div>

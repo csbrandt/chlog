@@ -1,0 +1,71 @@
+<div class="modal fade" id="delete_confirm_modal">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            <p>Delete the following post from the database?</p>
+            <div class="box clearfix preview"></div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="ink-button red delete">Delete</button>
+            <button type="button" class="ink-button" data-dismiss="modal">Cancel</button>
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div class="modal fade" id="publish_confirm_modal">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            <p>Publish the following post?</p>
+            <div class="box clearfix preview"></div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="ink-button green publish">Publish</button>
+            <button type="button" class="ink-button" data-dismiss="modal">Cancel</button>
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div class="box">
+   <nav class="ink-navigation">
+      <ul class="pagination pills grey">
+         <li class="all active"><a href="javascript:void(0)">All<span class="ink-badge grey">{{this.length}}</span></a>
+         </li>
+         <li class="drafts"><a href="javascript:void(0)">Drafts</a>
+         </li>
+         <li class="published"><a href="javascript:void(0)">Published</a>
+         </li>
+      </ul>
+   </nav>
+   <ul id="list-view-list" class="column-group half-horizontal-gutters">
+      {{#key_value this}}
+      <li id="{{#if value._id}}{{value._id}}{{else}}{{key}}{{/if}}" class="small-100 medium-50 large-50 xlarge-33 masonry-item">
+         <div class="box clearfix">
+            <div>
+               <small>Added {{timeago value.created}}</small>
+               <i class="fa fa-times-circle fa-lg push-right delete-icon" data-toggle="modal" data-target="#delete_confirm_modal" title="Delete"></i>
+               <i class="fa fa-pencil-square-o fa-lg push-right edit-icon" data-toggle="modal" data-target="#post_editor" title="Edit"></i>
+               <i class="fa fa-send fa-lg push-right publish-icon" data-toggle="modal" data-target="#publish_confirm_modal" title="Publish"></i>
+            </div>
+
+            <div class="content-preview">{{{value.preview}}}</div>
+
+            {{#if value.lastModified}}
+            <small>Last modified {{timeago value.lastModified}}</small>
+            {{/if}} {{#if value.published}}
+            <div class="spacer"></div>
+            <div class="published-ribbon">
+               <small>Published: {{locale_date_string value.published}}</small> <a class="push-right" href="#post/{{value._id}}" target="_blank"><i class="fa fa-link fa-lg"></i></a>
+            </div>
+            {{/if}}
+         </div>
+      </li>
+      {{/key_value}}
+   </ul>
+</div>
