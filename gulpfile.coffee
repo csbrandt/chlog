@@ -27,7 +27,7 @@ getBundler = (config) ->
    browserify(config.entryFile, { debug: true })
    .transform(stringify, {
       appliesTo: { includeExtensions: ['.html'] },
-      minify: true
+      minify: true,
    })
 
 bundle = (config) ->

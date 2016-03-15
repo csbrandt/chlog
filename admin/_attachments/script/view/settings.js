@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var Backbone = require('backbone');
 var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
@@ -7,20 +8,21 @@ var pubIndexTemplate = require('../../template/pubindex.html');
 
 module.exports = Backbone.View.extend({
    settingsTemplate: settingsTemplate,
+   pubIndexTemplate: pubIndexTemplate,
    model: new Backbone.Model(),
    collection: new Backbone.Collection(),
    events: {
-      'keyup input': 'handleFormChange'
+      'keyup input': 'handleFormChange',
+      'keyup textarea': 'handleFormChange'
    },
    initialize: function(options) {
       this.options = options;
 
-      this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
       this.db = new PouchDB(this.options.adminDBName);
-      this.publicDB = new PouchDB(this.options.publicDBName);
+      this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
 
       // get each sysdoc from adminDB
-      this.appDB.query('chlog-admin/sysdoc', {
+      this.db.query('chlog/sysdoc', {
          include_docs: true
       }, this.render.bind(this));
 
@@ -85,7 +87,7 @@ module.exports = Backbone.View.extend({
       this.collection.reset(sysdoc);
 
       // save sysdocs to database
-      this.appDB.bulkDocs(sysdoc, this.updateAfterSave.bind(this));
+      this.db.bulkDocs(sysdoc, this.updateAfterSave.bind(this));
    },
    updateAfterSave: function(err, response) {
       var sysdoc = this.collection.toJSON();
@@ -122,6 +124,23 @@ module.exports = Backbone.View.extend({
       });
 
       return settings;
+   },
+   updatePubIndex: function(settings) {
+      var pubIndexTemplate = Handlebars.compile(this.pubIndexTemplate);
+
+      // update appDBName _design/chlog-public
+
+      // get latest revision of _design/chlog
+      this.appDB.get('_design/chlog-public', function(err, response) {
+         // update index.html with latest settings
+         var indexText = [pubIndexTemplate(settings)];
+         var blob = new Blob(indexText, {
+            type: 'text/html'
+         });
+
+         this.appDB.putAttachment('_design/chlog-public', 'index.html', response._rev, blob, 'text/html');
+
+      }.bind(this));
    }
 
 });

@@ -3,7 +3,6 @@ var PouchDB = require('pouchdb');
 var MainView = require('./view/main');
 var ListView = require('./view/list');
 var SettingsView = require('./view/settings');
-var StatsView = require('./view/stats');
 
 var host = window.location.origin;
 var appDBName = 'chlog';
@@ -14,8 +13,7 @@ module.exports = Backbone.Router.extend({
    routes: {
       '': 'index',
       'settings': 'settings',
-      'edit_post': 'list',
-      'stats': 'stats'
+      'edit_post': 'list'
    },
    initialize: function() {
       var db = new PouchDB(adminDBName);
@@ -64,18 +62,6 @@ module.exports = Backbone.Router.extend({
             el: '#main',
             appDBName: appDBName,
             adminDBName: adminDBName,
-            publicDBName: publicDBName,
-            hostName: host
-         });
-      }
-   },
-   stats: function() {
-      if (!this.statsView) {
-         this.statsView = new StatsView({
-            el: '#main',
-            appDBName: appDBName,
-            adminDBName: adminDBName,
-            publicDBName: publicDBName,
             hostName: host
          });
       }

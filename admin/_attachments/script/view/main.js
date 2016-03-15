@@ -4,11 +4,9 @@ var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
 var EditorView = require('./editor');
 var mainTemplate = require('../../template/main.html');
-var pubIndexTemplate = require('../../template/pubindex.html');
 
 module.exports = Backbone.View.extend({
    mainTemplate: mainTemplate,
-   pubIndexTemplate: pubIndexTemplate,
    events: {
       'click #main_tabs a': 'handleTabLinkClick'
    },
@@ -42,23 +40,6 @@ module.exports = Backbone.View.extend({
    indicateError: function(jqXHR, textStatus, errorThrown) {
       this.$el.find('#status_error').show();
       this.$el.find('#status_txt').text(textStatus);
-   },
-   updatePubIndex: function(settings) {
-      var pubIndexTemplate = Handlebars.compile(this.pubIndexTemplate);
-
-      // get latest revision of _design/chlog
-      this.publicDB.get('_design/chlog', function(err, response) {
-         // update index.html with latest settings
-         var indexText = [pubIndexTemplate(settings)];
-         var blob = new Blob(indexText, {
-            type: 'text/html'
-         });
-
-         this.publicDB.putAttachment('_design/chlog', 'index.html', response._rev, blob, 'text/html', function(err, response) {
-            PouchDB.replicate(this.options.publicDBName, this.options.hostName + '/' + this.options.publicDBName);
-
-         }.bind(this));
-      }.bind(this));
    }
 
 });
