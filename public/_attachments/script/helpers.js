@@ -32,5 +32,9 @@ Handlebars.registerHelper("locale_date_string", function(date) {
 });
 
 Handlebars.registerHelper("ifOdd", function(index, options) {
-   return (index % 2 === 0 ? options.inverse(this) : options.fn(this));
+   if (index % 3) {
+      return options.fn(this);
+   } else {
+      return options.inverse(this);
+   }
 });
