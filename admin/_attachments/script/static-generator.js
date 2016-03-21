@@ -50,7 +50,6 @@ generator.generatePost = function(doc, settings) {
 };
 
 generator.generateTiles = function(posts, settings) {
-   // get all posts
    var tileTemplate;
    var postTileTemplate;
    var page;
