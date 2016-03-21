@@ -57,6 +57,18 @@ generator.generateTiles = function(posts, settings) {
    var pages = _.range(1, Math.ceil(posts.length / POSTS_PER_PAGE));
    var tiles = {};
 
+   posts.sort(function(a, b) {
+      if (a.published < b.published) {
+         return 1;
+      }
+
+      if (a.published > b.published) {
+         return -1;
+      }
+
+      return 0;
+   });
+
    // for each page generate tiles
    pages.forEach(function(pageNum) {
       postTileTemplate = Handlebars.compile(postTileTemplateSrc);
