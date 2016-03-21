@@ -11,10 +11,6 @@ Push admin interface application:
 
     $ couchapp push dist/admin [hostname]/chlog
 
-Push public interface application:
-
-    $ couchapp push dist/public [hostname]/chlog
-
 Development
 ------------
 
