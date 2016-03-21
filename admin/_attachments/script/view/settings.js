@@ -4,11 +4,11 @@ var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
 var _ = require('lodash');
 var settingsTemplate = require('../../template/settings.html');
-var pubIndexTemplate = require('../../template/pubindex.html');
+//var pubIndexTemplate = require('../../template/public/index.html');
 
 module.exports = Backbone.View.extend({
    settingsTemplate: settingsTemplate,
-   pubIndexTemplate: pubIndexTemplate,
+   //pubIndexTemplate: pubIndexTemplate,
    model: new Backbone.Model(),
    collection: new Backbone.Collection(),
    events: {
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
       this.options = options;
 
       this.db = new PouchDB(this.options.adminDBName);
-      this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
+      //this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
 
       // get each sysdoc from adminDB
       this.db.query('chlog/sysdoc', {
@@ -103,7 +103,7 @@ module.exports = Backbone.View.extend({
          // update public index when general settings are updated
          if (sysdoc[c].name === 'general') {
             // allow events to clear for intermediate changes
-            _.debounce(this.updatePubIndex.bind(this), 1000)(sysdoc[c]);
+            //_.debounce(this.updatePubIndex.bind(this), 1000)(sysdoc[c]);
          }
       }
    },
@@ -128,9 +128,7 @@ module.exports = Backbone.View.extend({
    updatePubIndex: function(settings) {
       var pubIndexTemplate = Handlebars.compile(this.pubIndexTemplate);
 
-      // update appDBName _design/chlog-public
-
-      // get latest revision of _design/chlog
+      // get latest revision of _design/chlog-public
       this.appDB.get('_design/chlog-public', function(err, response) {
          // update index.html with latest settings
          var indexText = [pubIndexTemplate(settings)];

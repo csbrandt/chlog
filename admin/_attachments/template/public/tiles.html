@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+   <meta name="viewport" content="width=device-width,initial-scale=1">
+   <meta name="description" content="{{description}}">
+   <meta name="author" content="{{author}}">
+   <meta name="keywords" content="{{keywords}}">
+   <meta name="robots" content="{{robots}}">
+   <meta name="generator" content="chlog">
+   <title>
+      {{title}}
+   </title>
+
+   <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700|Inconsolata' rel='stylesheet' type='text/css'>
+   <!-- Application styles -->
+   <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+   <div class="top-menu">
+      <nav class="ink-navigation">
+         <ul class="menu horizontal shadowed white">
+            <li class="active">
+               <a href="#">{{title}}</a>
+            </li>
+         </ul>
+      </nav>
+   </div>
+
+   <div id="content" class="ink-grid">
+      <div class="column-group half-horizontal-gutters">
+         {{#each post}} {{> postTileTemplate}} {{/each}}
+      </div>
+      <nav>
+         {{#unless lastPage}}
+         <a class="next-page push-right" href="{{nextPageNum}}.html">Page {{nextPageNum}} <i class="fa fa-angle-double-right fa-2"></i></a>
+         {{/unless}}
+         {{#unless firstPage}}
+         <a class="push-right" href="{{prevPageNum}}.html"><i class="fa fa-angle-double-left fa-2"></i> Page {{prevPageNum}}</a>
+         {{/unless}}
+      </nav>
+   </div>
+
+   <!-- tracking code -->
+   {{#if code}}
+   <script>
+   {{{code}}}
+   </script>
+   {{/if}}
+
+</body>
+
+</html>

@@ -6,16 +6,13 @@
 @import "bootstrap/less/variables.less";
 @import "bootstrap/less/modals.less";
 @import "bootstrap/less/navs.less";
+@import (inline) "../../node_modules/sapo_ink/dist/css/ink.min.css";
 
 @headerClearanceMargin: 4em;
 
 html,
 body {
-   height: 100%;
    font-family: 'Open Sans', sans-serif;
-}
-body::-webkit-scrollbar {
-   display: none;
 }
 small {
    font-size: 90%;
@@ -66,6 +63,10 @@ small {
       height: 100%;
       background: rgba(0, 0, 0, 0.4);
       padding: 0.8em;
+
+      &:hover {
+         background: rgba(0, 0, 0, 0.2);
+      }
    }
 }
 .image-screen {
@@ -86,4 +87,7 @@ small {
 }
 #content {
    padding-top: 1em;
+}
+.next-page {
+   padding-left: 1.5em;
 }

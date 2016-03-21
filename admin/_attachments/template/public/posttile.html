@@ -1,12 +1,12 @@
 {{#ifOdd @index}}
-<a class="small-100 medium-45 large-45 xlarge-45 clearfix posttile" href="#post/{{_id}}">
+<a class="small-100 medium-45 large-45 xlarge-45 posttile" href="{{_id}}.html">
    {{else}}
-<a class="small-100 medium-55 large-55 xlarge-55 clearfix posttile" href="#post/{{_id}}">
+<a class="small-100 medium-55 large-55 xlarge-55 posttile" href="{{_id}}.html">
 {{/ifOdd}}
       <div class="image-screen">
          {{#if bgImgUrl}}
          <div class="image-screen-bgimage" style="background-image:url({{bgImgUrl}})"></div>{{/if}}
-         <div class="box clearfix">
+         <div class="box">
             <div class="content-preview">{{{preview}}}</div>
             {{#if published}}
             <small>Published {{timeago published}}</small>

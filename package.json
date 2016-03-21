@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "Self-contained blogging platform as a CouchApp with one-click publishing and a Markdown editor that supports drag and drop images with live preview.",
   "scripts": {
-    "setup": "npm install & npm install --prefix ./admin/_attachments & npm install --prefix ./public/_attachments",
+    "setup": "npm install & npm install --prefix ./admin/_attachments",
     "push": "npm run pushDist && npm run pushDB",
-    "pushDist": "couchapp push dist/admin http://localhost:5984/chlog && couchapp push dist/public http://localhost:5984/chlog",
+    "pushDist": "couchapp push dist/admin http://localhost:5984/chlog",
     "pushDB": "couchapp push database http://localhost:5984/chlog-public && couchapp push database http://localhost:5984/chlog-admin"
   },
   "author": "csbrandt",

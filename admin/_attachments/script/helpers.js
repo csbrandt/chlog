@@ -75,3 +75,11 @@ Handlebars.registerHelper("key_value", function(obj, context) {
 Handlebars.registerHelper("locale_date_string", function(date) {
    return new Date(date).toLocaleDateString();
 });
+
+Handlebars.registerHelper("ifOdd", function(index, options) {
+   if (index % 3) {
+      return options.fn(this);
+   } else {
+      return options.inverse(this);
+   }
+});

@@ -4,6 +4,7 @@ var Masonry = require('masonry-layout');
 var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
 var marked = require('marked');
+var Generator = require('../static-generator');
 var EditorView = require('./editor');
 var listTemplate = require('../../template/list.html');
 require('../../node_modules/bootstrap/js/modal');
@@ -20,7 +21,6 @@ module.exports = Backbone.View.extend({
       'click ul#list-view-list .publish-icon': 'handlePostPublish',
       'click #publish_confirm_modal .publish': 'handlePostPublishConfirm',
       'click .done': 'handleDoneEdit',
-
       'click ul.pills li': 'handlePillsClick',
       'click ul.pills li.all': 'showAll',
       'click ul.pills li.drafts': 'showDrafts',
@@ -29,13 +29,14 @@ module.exports = Backbone.View.extend({
    initialize: function(options) {
       this.options = options;
 
+      this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
       this.db = new PouchDB(this.options.adminDBName);
       this.publicDB = new PouchDB(this.options.publicDBName);
 
       // get all posts from DB
-      this.db.query('chlog/byCreatedDate', {
-         include_docs: true
-      }, this.resetPosts.bind(this));
+      this.getPosts(function(err, posts) {
+         this.collection.reset(posts);
+      }.bind(this));
 
       // sort all posts by created date descending
       this.collection.comparator = function(a, b) {
@@ -54,7 +55,6 @@ module.exports = Backbone.View.extend({
       var listTemplate = Handlebars.compile(this.listTemplate);
 
       this.createContentPreview();
-
       this.$el.html(listTemplate(this.collection.toJSON()));
 
       this.editorView = new EditorView({
@@ -70,7 +70,6 @@ module.exports = Backbone.View.extend({
       });
 
       this.masonry.layout();
-
       this.collection.on({
          'reset': this.render
       }, this);
@@ -91,19 +90,27 @@ module.exports = Backbone.View.extend({
       }.bind(this));
    },
    handlePostPublishConfirm: function(event) {
-      // get post id to delete
       var $modal = $(event.target).closest('.modal');
       var postID = $modal.data().postid;
 
-      this.db.get(postID, function(err, doc) {
-         // add published date to post
-         doc.published = Date.now();
-         // update post in database
-         this.db.put(doc, this.handleDBDocUpdate);
-
-         delete doc._rev;
-         // push post to public database
-         this.publicDB.put(doc);
+      this.publishPost(postID, function(err, doc) {
+         if (err) { return console.log(err); }
+         this.db.query('chlog/sysdoc', {
+            include_docs: true
+         }, function(err, sysdocs) {
+            var settings = _.filter(sysdocs.rows, {key: 'general'})[0].doc;
+            // get all posts from DB
+            this.getPosts(function(err, posts) {
+               var publicDoc = Generator.generateDoc(posts, settings);
+               publicDoc._id = '_design/chlog-public';
+               // get latest revision of _design/chlog-public
+               this.appDB.get(publicDoc._id, function(err, response) {
+                  publicDoc._rev = response._rev;
+                  // update public site
+                  this.appDB.put(publicDoc);
+               }.bind(this));
+            }.bind(this));
+         }.bind(this));
       }.bind(this));
 
       // close modal
@@ -121,10 +128,24 @@ module.exports = Backbone.View.extend({
 
       $('#publish_confirm_modal .preview').html($previewNodes.html());
    },
+   publishPost: function(postID, cb) {
+      this.db.get(postID, function(err, doc) {
+         if (err) { return console.log(err); }
+         // add published date to post
+         doc.published = Date.now();
+         // update post in database
+         this.db.put(doc, this.handleDBDocUpdate);
+
+         delete doc._rev;
+         // push post to public database
+         this.publicDB.put(doc, function(err) {
+            cb(err, doc);
+         });
+      }.bind(this));
+   },
    handleDoneEdit: function(event) {
       // remove editor
       this.editorView.remove();
-
       this.render();
    },
    handleDBDocUpdate: function(err, response) {
@@ -156,8 +177,23 @@ module.exports = Backbone.View.extend({
       // close modal
       $modal.modal('hide');
    },
+   mapDocs: function(response) {
+      return _.map(_.pick(response, 'rows').rows, 'doc');
+   },
    resetPosts: function(err, response) {
-      this.collection.reset(_.map(_.pick(response, 'rows').rows, 'doc'));
+      this.collection.reset(this.mapDocs(response));
+   },
+   getPosts: function(cb) {
+      // get all posts from DB
+      this.db.query('chlog/byCreatedDate', {
+         include_docs: true
+      }, function(err, response) {
+         if (err) {
+            cb(err, null);
+         } else {
+            cb(err, this.mapDocs(response));
+         }
+      }.bind(this));
    },
    createContentPreview: function() {
       this.collection.forEach(function(post, index, list) {

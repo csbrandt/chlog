@@ -11,22 +11,16 @@ buffer = require('vinyl-buffer')
 stringify = require('stringify')
 path = require('path')
 
-configAdmin =
+config =
    entryFile: './admin/_attachments/script/index.js'
    inputDir: './admin'
    outputDir: './dist/admin'
    outputFile: 'index.js'
 
-configPublic =
-   entryFile: './public/_attachments/script/index.js'
-   inputDir: './public'
-   outputDir: './dist/public'
-   outputFile: 'index.js'
-
 getBundler = (config) ->
    browserify(config.entryFile, { debug: true })
    .transform(stringify, {
-      appliesTo: { includeExtensions: ['.html'] },
+      appliesTo: { includeExtensions: ['.html', '.css'] },
       minify: true
    })
 
@@ -43,64 +37,42 @@ gulp.task 'clean', (cb) ->
    rimraf './dist/', cb
 
 gulp.task 'css-admin', ->
-   gulp.src(configAdmin.inputDir + '/_attachments/less/style.less')
+   gulp.src(config.inputDir + '/_attachments/less/style.less')
       .pipe(less({
-         paths: [path.join(configAdmin.inputDir, '_attachments', 'node_modules')]
+         paths: [path.join(config.inputDir, '_attachments', 'node_modules')]
       }))
       .pipe cssmin()
-      .pipe gulp.dest(configAdmin.outputDir + '/_attachments/css')
+      .pipe gulp.dest(config.outputDir + '/_attachments/css')
 
 gulp.task 'css-public', ->
-   gulp.src(configPublic.inputDir + '/_attachments/less/style.less')
+   gulp.src(config.inputDir + '/_attachments/less/public/style.less')
       .pipe(less({
-         paths: [path.join(configPublic.inputDir, '_attachments', 'node_modules')]
+         paths: [path.join(config.inputDir, '_attachments', 'node_modules')]
       }))
       .pipe cssmin()
-      .pipe gulp.dest(configPublic.outputDir + '/_attachments/css')
+      .pipe gulp.dest(config.outputDir + '/_attachments/css/public')
 
 gulp.task 'copy-admin', ['clean', 'build'], ->
-   gulp.src(configAdmin.inputDir + '/_id')
-      .pipe gulp.dest(configAdmin.outputDir)
+   gulp.src(config.inputDir + '/_id')
+      .pipe gulp.dest(config.outputDir)
 
-   gulp.src(configAdmin.inputDir + '/rewrites.json')
-      .pipe gulp.dest(configAdmin.outputDir)
+   gulp.src(config.inputDir + '/rewrites.json')
+      .pipe gulp.dest(config.outputDir)
 
-   gulp.src(configAdmin.inputDir + '/language')
-      .pipe gulp.dest(configAdmin.outputDir)
+   gulp.src(config.inputDir + '/language')
+      .pipe gulp.dest(config.outputDir)
 
-   gulp.src(configAdmin.inputDir + '/_attachments/index.html')
-      .pipe gulp.dest(configAdmin.outputDir + '/_attachments')
-
-   gulp.src(configAdmin.inputDir + '/_attachments/node_modules/sapo_ink/dist/css/ink.min.css')
-      .pipe gulp.dest(configAdmin.outputDir + '/_attachments/css')
-
-gulp.task 'copy-public', ['clean', 'build'], ->
-   gulp.src(configPublic.inputDir + '/_id')
-      .pipe gulp.dest(configPublic.outputDir)
-
-   gulp.src(configPublic.inputDir + '/rewrites.json')
-      .pipe gulp.dest(configPublic.outputDir)
-
-   gulp.src(configPublic.inputDir + '/language')
-      .pipe gulp.dest(configPublic.outputDir)
-
-   gulp.src(configPublic.inputDir + '/_attachments/index.html')
-      .pipe gulp.dest(configPublic.outputDir + '/_attachments')
-
-   gulp.src(configPublic.inputDir + '/_attachments/node_modules/sapo_ink/dist/css/ink.min.css')
-      .pipe gulp.dest(configPublic.outputDir + '/_attachments/css')
+   gulp.src(config.inputDir + '/_attachments/index.html')
+      .pipe gulp.dest(config.outputDir + '/_attachments')
 
 gulp.task 'build-admin', ['clean'], ->
-   bundle(configAdmin)
-
-gulp.task 'build-public', ['clean'], ->
-   bundle(configPublic)
+   bundle(config)
 
 gulp.task 'css', ['css-admin', 'css-public'], ->
 
-gulp.task 'build', ['build-admin', 'build-public'], ->
+gulp.task 'build', ['build-admin'], ->
 
-gulp.task 'copy', ['copy-admin', 'copy-public'], ->
+gulp.task 'copy', ['copy-admin'], ->
 
 gulp.task 'lint', ->
    # ESLint ignores files with "node_modules" paths.

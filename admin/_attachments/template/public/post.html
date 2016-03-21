@@ -15,19 +15,36 @@
    </title>
 
    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700|Inconsolata' rel='stylesheet' type='text/css'>
-   <link rel="stylesheet" href="css/ink.min.css">
    <!-- Application styles -->
    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-   <!-- Application source. -->
-   <script src="script/index.js"></script>
+   <div class="top-menu">
+      <nav class="ink-navigation">
+         <ul class="menu horizontal shadowed white">
+            <li class="active">
+               <a href="#">{{title}}</a>
+            </li>
+
+         </ul>
+      </nav>
+   </div>
+
+   <div id="content" class="ink-grid">
+      <div class="column-group">
+         <article class="xlarge-80 large-70 medium-70 small-100 tiny-100">
+            {{{content}}}
+         </article>
+      </div>
+   </div>
 
    <!-- tracking code -->
+   {{#if code}}
    <script>
    {{{code}}}
    </script>
+   {{/if}}
 
 </body>
 

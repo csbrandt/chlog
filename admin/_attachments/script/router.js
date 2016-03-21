@@ -49,8 +49,10 @@ module.exports = Backbone.Router.extend({
       if (!this.listView) {
          this.listView = new ListView({
             el: '#main',
+            appDBName: appDBName,
             adminDBName: adminDBName,
-            publicDBName: publicDBName
+            publicDBName: publicDBName,
+            hostName: host
          });
       }
 
