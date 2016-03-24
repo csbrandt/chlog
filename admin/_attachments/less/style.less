@@ -1,5 +1,4 @@
 @import "map.less";
-@import "font-awesome/less/font-awesome.less";
 @import "bootstrap/less/mixins/opacity.less";
 @import "bootstrap/less/mixins/vendor-prefixes.less";
 @import "bootstrap/less/mixins/nav-divider.less";
@@ -51,6 +50,12 @@ img {
 .ink-form input[type="color"] {
   font-family: 'Inconsolata', Arial, Helvetica, sans-serif;
   padding: 0;
+}
+.ink-form {
+   .box.column-group.gutters {
+      margin-left: 0;
+      margin: 0 0 1em 0;
+   }
 }
 .modal-dialog {
    margin-top: @headerClearanceMargin;

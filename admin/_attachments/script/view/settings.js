@@ -3,12 +3,12 @@ var Backbone = require('backbone');
 var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
 var _ = require('lodash');
+var Generator = require('../static-generator');
+var dataUtil = require('../data-util.js');
 var settingsTemplate = require('../../template/settings.html');
-//var pubIndexTemplate = require('../../template/public/index.html');
 
 module.exports = Backbone.View.extend({
    settingsTemplate: settingsTemplate,
-   //pubIndexTemplate: pubIndexTemplate,
    model: new Backbone.Model(),
    collection: new Backbone.Collection(),
    events: {
@@ -18,8 +18,9 @@ module.exports = Backbone.View.extend({
    initialize: function(options) {
       this.options = options;
 
+      this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
       this.db = new PouchDB(this.options.adminDBName);
-      //this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
+      this.publicDB = new PouchDB(this.options.publicDBName);
 
       // get each sysdoc from adminDB
       this.db.query('chlog/sysdoc', {
@@ -29,7 +30,7 @@ module.exports = Backbone.View.extend({
       // setup handlers for modelEvents
       // callback is delayed to avoid multiple calls for duplicate events
       this.model.on({
-         'change': _.debounce(this.handleModelChange, 300)
+         'change': _.debounce(this.handleModelChange, 500)
       }, this);
    },
    render: function(err, response) {
@@ -87,25 +88,7 @@ module.exports = Backbone.View.extend({
       this.collection.reset(sysdoc);
 
       // save sysdocs to database
-      this.db.bulkDocs(sysdoc, this.updateAfterSave.bind(this));
-   },
-   updateAfterSave: function(err, response) {
-      var sysdoc = this.collection.toJSON();
-
-      for (var c = 0; c < response.length; c++) {
-         sysdoc[c]._id = response[c].id;
-         sysdoc[c]._rev = response[c].rev;
-
-         this.model.set(sysdoc[c].name, sysdoc[c], {
-            silent: true
-         });
-
-         // update public index when general settings are updated
-         if (sysdoc[c].name === 'general') {
-            // allow events to clear for intermediate changes
-            //_.debounce(this.updatePubIndex.bind(this), 1000)(sysdoc[c]);
-         }
-      }
+      this.db.bulkDocs(sysdoc, this.updateSite.bind(this));
    },
    getSettings: function(rows) {
       var formIDs = [];
@@ -125,19 +108,25 @@ module.exports = Backbone.View.extend({
 
       return settings;
    },
-   updatePubIndex: function(settings) {
-      var pubIndexTemplate = Handlebars.compile(this.pubIndexTemplate);
-
-      // get latest revision of _design/chlog-public
-      this.appDB.get('_design/chlog-public', function(err, response) {
-         // update index.html with latest settings
-         var indexText = [pubIndexTemplate(settings)];
-         var blob = new Blob(indexText, {
-            type: 'text/html'
+   updateSite: function(err) {
+      this.db.query('chlog/sysdoc', {
+         include_docs: true
+      }, function(err, sysdocs) {
+         var settings = {};
+         dataUtil.mapDocs(sysdocs).forEach(function (sysdoc) {
+            Object.assign(settings, sysdoc);
          });
-
-         this.appDB.putAttachment('_design/chlog-public', 'index.html', response._rev, blob, 'text/html');
-
+         // get all posts from DB
+         dataUtil.getPosts(this.publicDB, function(err, posts) {
+            var publicDoc = Generator.generateDoc(posts, settings);
+            publicDoc._id = '_design/chlog-public';
+            // get latest revision of _design/chlog-public
+            this.appDB.get(publicDoc._id, function(err, response) {
+               publicDoc._rev = response._rev;
+               // update public site
+               this.appDB.put(publicDoc);
+            }.bind(this));
+         }.bind(this));
       }.bind(this));
    }
 

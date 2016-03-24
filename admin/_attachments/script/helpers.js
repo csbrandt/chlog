@@ -77,7 +77,7 @@ Handlebars.registerHelper("locale_date_string", function(date) {
 });
 
 Handlebars.registerHelper("ifOdd", function(index, options) {
-   if (index % 3) {
+   if ((index + (Math.floor(index / 2) % 2)) % 2) {
       return options.fn(this);
    } else {
       return options.inverse(this);

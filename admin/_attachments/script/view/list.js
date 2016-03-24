@@ -5,6 +5,7 @@ var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
 var marked = require('marked');
 var Generator = require('../static-generator');
+var dataUtil = require('../data-util.js');
 var EditorView = require('./editor');
 var listTemplate = require('../../template/list.html');
 require('../../node_modules/bootstrap/js/modal');
@@ -34,7 +35,7 @@ module.exports = Backbone.View.extend({
       this.publicDB = new PouchDB(this.options.publicDBName);
 
       // get all posts from DB
-      this.getPosts(function(err, posts) {
+      dataUtil.getPosts(this.db, function(err, posts) {
          this.collection.reset(posts);
       }.bind(this));
 
@@ -100,7 +101,7 @@ module.exports = Backbone.View.extend({
          }, function(err, sysdocs) {
             var settings = _.filter(sysdocs.rows, {key: 'general'})[0].doc;
             // get all posts from DB
-            this.getPosts(function(err, posts) {
+            dataUtil.getPosts(this.publicDB, function(err, posts) {
                var publicDoc = Generator.generateDoc(posts, settings);
                publicDoc._id = '_design/chlog-public';
                // get latest revision of _design/chlog-public
@@ -177,23 +178,8 @@ module.exports = Backbone.View.extend({
       // close modal
       $modal.modal('hide');
    },
-   mapDocs: function(response) {
-      return _.map(_.pick(response, 'rows').rows, 'doc');
-   },
    resetPosts: function(err, response) {
-      this.collection.reset(this.mapDocs(response));
-   },
-   getPosts: function(cb) {
-      // get all posts from DB
-      this.db.query('chlog/byCreatedDate', {
-         include_docs: true
-      }, function(err, response) {
-         if (err) {
-            cb(err, null);
-         } else {
-            cb(err, this.mapDocs(response));
-         }
-      }.bind(this));
+      this.collection.reset(dataUtil.mapDocs(response));
    },
    createContentPreview: function() {
       this.collection.forEach(function(post, index, list) {

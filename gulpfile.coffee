@@ -36,7 +36,7 @@ bundle = (config) ->
 gulp.task 'clean', (cb) ->
    rimraf './dist/', cb
 
-gulp.task 'css-admin', ->
+gulp.task 'css-admin', ['clean'], ->
    gulp.src(config.inputDir + '/_attachments/less/style.less')
       .pipe(less({
          paths: [path.join(config.inputDir, '_attachments', 'node_modules')]
@@ -44,7 +44,7 @@ gulp.task 'css-admin', ->
       .pipe cssmin()
       .pipe gulp.dest(config.outputDir + '/_attachments/css')
 
-gulp.task 'css-public', ->
+gulp.task 'css-public', ['clean'], ->
    gulp.src(config.inputDir + '/_attachments/less/public/style.less')
       .pipe(less({
          paths: [path.join(config.inputDir, '_attachments', 'node_modules')]

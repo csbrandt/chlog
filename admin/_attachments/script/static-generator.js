@@ -1,12 +1,13 @@
 var _                   = require('lodash');
 var Handlebars          = require('handlebars');
 var marked              = require('marked');
+var rss                 = require('rss');
 var tileTemplateSrc     = require('../template/public/tiles.html');
 var postTileTemplateSrc = require('../template/public/posttile.html');
 var postTemplateSrc     = require('../template/public/post.html');
 var rewrites            = require('../../public-rewrites.json');
 var cssText             = require('../../../dist/admin/_attachments/css/public/style.css');
-var POSTS_PER_PAGE      = 10;
+var POSTS_PER_PAGE      = 8;
 var generator           = exports;
 
 generator.generateDoc = function(posts, settings) {
@@ -15,6 +16,10 @@ generator.generateDoc = function(posts, settings) {
          'css/style.css': {
             'content_type': 'text/css',
             'data': new Blob([cssText], {type: 'text/css'})
+         },
+         'feed.rss': {
+            'content_type': 'application/rss+xml',
+            'data': new Blob([this.generateFeed(posts, settings)], {type: 'application/rss+xml'})
          }
       },
       'rewrites': rewrites
@@ -41,7 +46,7 @@ generator.generatePost = function(doc, settings) {
 
       post[doc._id + '.html'] = {
          "content_type": "text/html",
-         "data": new Blob([page], {type: 'text/html'})
+         "data": new Blob([page], {type: "text/html"})
       };
 
    }.bind(this));
@@ -84,10 +89,33 @@ generator.generateTiles = function(posts, settings) {
 
       tiles[pageNum + '.html'] = {
          "content_type": "text/html",
-         "data": new Blob([page], {type: 'text/html'})
+         "data": new Blob([page], {type: "text/html"})
       };
 
    });
 
    return tiles;
+};
+
+generator.generateFeed = function(posts, settings) {
+   var feed = new rss({
+      title: settings.title,
+      description: settings.description,
+      generator: "RSS for Node",
+      feed_url: window.location.host + "/feed.rss",
+      site_url: window.location.host
+   });
+
+   posts.forEach(function(post, name) {
+      feed.item({
+         //title:
+         //description:
+         url: window.location.host + "/" + post._id + ".html",
+         guid: post._id,
+         author: settings.author,
+         date: post.published
+      });
+   });
+
+   return feed.xml();
 };

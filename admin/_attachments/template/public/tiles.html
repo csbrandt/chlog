@@ -14,7 +14,10 @@
       {{title}}
    </title>
 
-   <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700|Inconsolata' rel='stylesheet' type='text/css'>
+   <link href='feed.rss' rel='alternate' type='application/rss+xml' title='{{title}}'>
+   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Inconsolata' rel='stylesheet' type='text/css'>
+   <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+
    <!-- Application styles -->
    <link rel="stylesheet" href="css/style.css">
 </head>
@@ -24,7 +27,7 @@
       <nav class="ink-navigation">
          <ul class="menu horizontal shadowed white">
             <li class="active">
-               <a id="title" href="#">{{title}}</a>
+               <a href="#">{{title}}</a>
             </li>
          </ul>
       </nav>
@@ -34,15 +37,34 @@
       <div class="column-group half-horizontal-gutters">
          {{#each post}} {{> postTileTemplate}} {{/each}}
       </div>
-      <nav>
+      <nav id="page">
          {{#unless lastPage}}
-         <a class="next-page push-right" href="{{nextPageNum}}.html">Page {{nextPageNum}} <i class="fa fa-angle-double-right fa-2"></i></a>
+         <a class="large next-page push-right" href="{{nextPageNum}}.html">Page {{nextPageNum}} <i class="fa fa-angle-double-right fa-2"></i></a>
          {{/unless}}
          {{#unless firstPage}}
-         <a class="push-right" href="{{prevPageNum}}.html"><i class="fa fa-angle-double-left fa-2"></i> Page {{prevPageNum}}</a>
+         <a class="large push-right" href="{{prevPageNum}}.html"><i class="fa fa-angle-double-left fa-2"></i> Page {{prevPageNum}}</a>
          {{/unless}}
       </nav>
    </div>
+   <footer class="ink-grid">
+      <div class="column-group">
+         <div id="social" class="pull-left">
+            <a type="application/rss+xml" href="feed.rss"><i class="fa fa-rss fa-lg"></i></a>
+            {{#if email}}
+            <a href="mailto:{{email}}"><i class="fa fa-envelope fa-lg"></i></a>
+            {{/if}}
+            {{#if github}}
+            <a href="https://github.com/{{github}}"><i class="fa fa-github-alt fa-lg"></i></a>
+            {{/if}}
+            {{#if twitter}}
+            <a href="https://twitter.com/{{twitter}}"><i class="fa fa-twitter fa-lg"></i></a>
+            {{/if}}
+         </div>
+         {{#if colophon}}
+         <div class="all-50 push-center align-center"><small>{{{colophon}}}</small></div>
+         {{/if}}
+      </div>
+   </footer>
 
    <!-- tracking code -->
    {{#if code}}

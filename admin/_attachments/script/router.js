@@ -64,6 +64,7 @@ module.exports = Backbone.Router.extend({
             el: '#main',
             appDBName: appDBName,
             adminDBName: adminDBName,
+            publicDBName: publicDBName,
             hostName: host
          });
       }
