@@ -1,5 +1,14 @@
 Self-contained blogging platform as a CouchApp with one-click publishing and a Markdown editor that supports drag and drop images with live preview.
 
+
+Features
+---------
++ Post publishing/editing
++ Static site generator
++ RSS feed
++ Optional email/social icon links
++ Responsive design
+
 Installation
 -------------
 
