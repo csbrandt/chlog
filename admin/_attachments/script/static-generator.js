@@ -58,7 +58,7 @@ generator.generateTiles = function(posts, settings) {
    var tileTemplate;
    var postTileTemplate;
    var page;
-   var pages = _.range(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+   var pages = _.range(1, Math.max(2, Math.ceil(posts.length / POSTS_PER_PAGE)));
    var tiles = {};
 
    posts.sort(function(a, b) {
