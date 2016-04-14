@@ -55,7 +55,10 @@ module.exports = Backbone.View.extend({
    render: function() {
       var listTemplate = Handlebars.compile(this.listTemplate);
 
-      this.createContentPreview();
+      this.collection.forEach(function(post) {
+         post.set(Generator.generateContentPreview(post.toJSON()));
+      });
+
       this.$el.html(listTemplate(this.collection.toJSON()));
 
       this.editorView = new EditorView({
@@ -180,18 +183,6 @@ module.exports = Backbone.View.extend({
    },
    resetPosts: function(err, response) {
       this.collection.reset(dataUtil.mapDocs(response));
-   },
-   createContentPreview: function() {
-      this.collection.forEach(function(post, index, list) {
-         marked(post.get('input'), function(err, content) {
-            // pick the first header from this content
-            var firstHeaderHTML = $('<div />').html(content).children('h1:first').wrap('<div />').parent().html();
-
-            // todo: include image if present on post
-
-            post.set('preview', firstHeaderHTML);
-         });
-      });
    },
    showAll: function() {
       var elements = this.$el.find('.masonry-item');

@@ -1,25 +1,30 @@
-var _                   = require('lodash');
-var Handlebars          = require('handlebars');
-var marked              = require('marked');
-var rss                 = require('rss');
-var tileTemplateSrc     = require('../template/public/tiles.html');
+var _ = require('lodash');
+var $ = require('jquery');
+var Handlebars = require('handlebars');
+var marked = require('marked');
+var rss = require('rss');
+var tileTemplateSrc = require('../template/public/tiles.html');
 var postTileTemplateSrc = require('../template/public/posttile.html');
-var postTemplateSrc     = require('../template/public/post.html');
-var rewrites            = require('../../public-rewrites.json');
-var cssText             = require('../../../dist/admin/_attachments/css/public/style.css');
-var POSTS_PER_PAGE      = 8;
-var generator           = exports;
+var postTemplateSrc = require('../template/public/post.html');
+var rewrites = require('../../public-rewrites.json');
+var cssText = require('../../../dist/admin/_attachments/css/public/style.css');
+var POSTS_PER_PAGE = 8;
+var generator = exports;
 
 generator.generateDoc = function(posts, settings) {
    var doc = {
       '_attachments': {
          'css/style.css': {
             'content_type': 'text/css',
-            'data': new Blob([cssText], {type: 'text/css'})
+            'data': new Blob([cssText], {
+               type: 'text/css'
+            })
          },
          'feed.rss': {
             'content_type': 'application/rss+xml',
-            'data': new Blob([this.generateFeed(posts, settings)], {type: 'application/rss+xml'})
+            'data': new Blob([this.generateFeed(posts, settings)], {
+               type: 'application/rss+xml'
+            })
          }
       },
       'rewrites': rewrites
@@ -41,25 +46,32 @@ generator.generatePost = function(doc, settings) {
    var post = {};
 
    marked(doc.input, function(err, content) {
-      doc.content = content;
+      var $parsed = $('<div />').html(content);
+      $parsed.children('h1:first').remove();
+      $parsed.find('p > img').first().parent().remove();
+
+      doc.content = $parsed.html();
+      doc.published = (new Date(doc.published)).toLocaleDateString();
       var page = postTemplate(Object.assign({}, doc, settings));
 
       post[doc._id + '.html'] = {
          "content_type": "text/html",
-         "data": new Blob([page], {type: "text/html"})
+         "data": new Blob([page], {
+            type: "text/html"
+         })
       };
-
-   }.bind(this));
+   });
 
    return post;
 };
 
 generator.generateTiles = function(posts, settings) {
-   var tileTemplate;
-   var postTileTemplate;
-   var page;
+   var tileTemplate = Handlebars.compile(tileTemplateSrc);
+   var postTileTemplate = Handlebars.compile(postTileTemplateSrc);
    var pages = _.range(1, Math.max(2, Math.ceil(posts.length / POSTS_PER_PAGE)));
+   var page;
    var tiles = {};
+   var postsMarkup = '';
 
    posts.sort(function(a, b) {
       if (a.published < b.published) {
@@ -75,26 +87,45 @@ generator.generateTiles = function(posts, settings) {
 
    // for each page generate tiles
    pages.forEach(function(pageNum) {
-      postTileTemplate = Handlebars.compile(postTileTemplateSrc);
-      Handlebars.registerPartial("postTileTemplate", postTileTemplate);
-      tileTemplate = Handlebars.compile(tileTemplateSrc);
+      posts.slice(POSTS_PER_PAGE * (pageNum - 1), POSTS_PER_PAGE * pageNum).forEach(function(post) {
+         postsMarkup += postTileTemplate(generator.generateContentPreview(post));
+      });
 
       page = tileTemplate(Object.assign({
          nextPageNum: pageNum + 1,
          prevPageNum: pageNum - 1,
          firstPage: (pageNum === 1),
          lastPage: (pageNum === pages.length),
-         post: posts.slice(POSTS_PER_PAGE * (pageNum - 1), POSTS_PER_PAGE * pageNum)
+         posts: postsMarkup
       }, settings));
 
       tiles[pageNum + '.html'] = {
          "content_type": "text/html",
-         "data": new Blob([page], {type: "text/html"})
+         "data": new Blob([page], {
+            type: "text/html"
+         })
       };
 
    });
 
    return tiles;
+};
+
+generator.generateContentPreview = function(post) {
+   var content = marked(post.input);
+   var $parsed = $('<div />').html(content);
+   // pick the first header from this content
+   var firstHeaderHTML = $parsed.children('h1:first').wrap('<div />').parent().html();
+
+   // include image if present on post
+   var $firstImg = $parsed.children().find('img:first');
+
+   if ($firstImg.length) {
+      post.bgImgUrl = $firstImg.attr('src');
+   }
+
+   post.preview = firstHeaderHTML;
+   return post;
 };
 
 generator.generateFeed = function(posts, settings) {

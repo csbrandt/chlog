@@ -18,7 +18,7 @@ config =
    outputFile: 'index.js'
 
 getBundler = (config) ->
-   browserify(config.entryFile, { debug: true })
+   browserify(config.entryFile)
    .transform(stringify, {
       appliesTo: { includeExtensions: ['.html', '.css'] },
       minify: true
