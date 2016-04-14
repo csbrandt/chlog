@@ -87,7 +87,8 @@ generator.generateTiles = function(posts, settings) {
 
    // for each page generate tiles
    pages.forEach(function(pageNum) {
-      posts.slice(POSTS_PER_PAGE * (pageNum - 1), POSTS_PER_PAGE * pageNum).forEach(function(post) {
+      posts.slice(POSTS_PER_PAGE * (pageNum - 1), POSTS_PER_PAGE * pageNum).forEach(function(post, index) {
+         post.index = index;
          postsMarkup += postTileTemplate(generator.generateContentPreview(post));
       });
 
