@@ -29,8 +29,8 @@ bundle = (config) ->
       console.log 'Error: ' + err.message
       process.exit 0
    ).pipe source(config.outputFile)
-   #.pipe buffer()
-   #.pipe uglify()
+   .pipe buffer()
+   .pipe uglify()
    .pipe gulp.dest(config.outputDir + '/_attachments/script')
 
 gulp.task 'clean', (cb) ->
