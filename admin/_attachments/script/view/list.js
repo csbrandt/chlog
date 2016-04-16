@@ -3,7 +3,6 @@ var $ = window.jQuery = require('jquery');
 var Masonry = require('masonry-layout');
 var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
-var marked = require('marked');
 var Generator = require('../static-generator');
 var dataUtil = require('../data-util.js');
 var EditorView = require('./editor');

@@ -63,7 +63,10 @@ module.exports = Backbone.View.extend({
          gfm: true,
          tables: true,
          breaks: true,
-         sanitize: true
+         sanitize: true,
+         highlight: function (code) {
+            return require('highlight.js').highlightAuto(code).value;
+         }
       });
    },
    render: function() {

@@ -5,6 +5,7 @@
 @import "bootstrap/less/variables.less";
 @import "bootstrap/less/modals.less";
 @import "bootstrap/less/navs.less";
+@import "../github.less";
 @import (inline) "../../node_modules/sapo_ink/dist/css/ink.min.css";
 
 @headerClearanceMargin: 4em;
@@ -15,6 +16,12 @@ body {
 }
 small {
    font-size: 90%;
+}
+article > pre {
+   background-color: rgb(247, 247, 247);
+   padding: 0.8em;
+   font-size: 0.8em;
+   border-radius: 3px;
 }
 .column-group > article[class*=large-] {
    margin: 0 auto;

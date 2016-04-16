@@ -45,6 +45,12 @@ generator.generatePost = function(doc, settings) {
    var postTemplate = Handlebars.compile(postTemplateSrc);
    var post = {};
 
+   marked.setOptions({
+      highlight: function (code) {
+         return require('highlight.js').highlightAuto(code).value;
+      }
+   });
+
    marked(doc.input, function(err, content) {
       var $parsed = $('<div />').html(content);
       $parsed.children('h1:first').remove();

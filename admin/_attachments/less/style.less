@@ -6,6 +6,7 @@
 @import "bootstrap/less/variables.less";
 @import "bootstrap/less/modals.less";
 @import "bootstrap/less/navs.less";
+@import "./github.less";
 @import (inline) "../node_modules/sapo_ink/dist/css/ink.min.css";
 
 @headerClearanceMargin: 3.5em;
@@ -171,6 +172,13 @@ img {
 .preview {
    height: 100%;
    padding: 0.6em 1em;
+
+   pre {
+      background-color: #d3d3d3;
+      padding: 0.8em;
+      font-size: 0.8em;
+      border-radius: 3px;
+   }
 }
 path.line {
    stroke-width: 3px;
