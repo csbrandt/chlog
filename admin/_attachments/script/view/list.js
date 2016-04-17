@@ -101,7 +101,9 @@ module.exports = Backbone.View.extend({
          this.db.query('chlog/sysdoc', {
             include_docs: true
          }, function(err, sysdocs) {
-            var settings = _.filter(sysdocs.rows, {key: 'general'})[0].doc;
+            var settings = _.reduce(_.map(sysdocs.rows, 'doc'), function(result, value) {
+               return Object.assign({}, result, value);
+            });
             // get all posts from DB
             dataUtil.getPosts(this.publicDB, function(err, posts) {
                var publicDoc = Generator.generateDoc(posts, settings);

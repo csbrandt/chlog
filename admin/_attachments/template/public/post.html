@@ -44,13 +44,24 @@
          </article>
       </div>
    </div>
-
-   <!-- tracking code -->
-   {{#if code}}
-   <script>
-   {{{code}}}
-   </script>
-   {{/if}}
+   <footer class="ink-grid">
+      <div class="column-group">
+         <div id="social" class="pull-left">
+            {{#if email}}
+            <a href="mailto:{{email}}"><i class="fa fa-envelope fa-lg"></i></a>
+            {{/if}}
+            {{#if github}}
+            <a href="https://github.com/{{github}}"><i class="fa fa-github-alt fa-lg"></i></a>
+            {{/if}}
+            {{#if twitter}}
+            <a href="https://twitter.com/{{twitter}}"><i class="fa fa-twitter fa-lg"></i></a>
+            {{/if}}
+         </div>
+         {{#if colophon}}
+         <div class="all-50 push-center align-center"><small>{{{colophon}}}</small></div>
+         {{/if}}
+      </div>
+   </footer>
 
 </body>
 
