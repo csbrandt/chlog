@@ -95,6 +95,7 @@ generator.generateTiles = function(posts, settings) {
    pages.forEach(function(pageNum) {
       posts.slice(POSTS_PER_PAGE * (pageNum - 1), POSTS_PER_PAGE * pageNum).forEach(function(post, index) {
          post.index = index;
+         post.published = (new Date(post.published)).toLocaleDateString();
          postsMarkup += postTileTemplate(generator.generateContentPreview(post));
       });
 
