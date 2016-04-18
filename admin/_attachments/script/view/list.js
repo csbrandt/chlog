@@ -31,7 +31,6 @@ module.exports = Backbone.View.extend({
 
       this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
       this.db = new PouchDB(this.options.adminDBName);
-      this.publicDB = new PouchDB(this.options.publicDBName);
 
       // get all posts from DB
       dataUtil.getPosts(this.db, function(err, posts) {
@@ -63,7 +62,7 @@ module.exports = Backbone.View.extend({
       this.editorView = new EditorView({
          el: '#main',
          adminDBName: this.options.adminDBName,
-         publicDBName: this.options.publicDBName,
+         appDBName: this.options.appDBName,
          hostName: this.options.hostName
       });
 
@@ -97,7 +96,6 @@ module.exports = Backbone.View.extend({
       var postID = $modal.data().postid;
 
       this.publishPost(postID, function(err, doc) {
-         if (err) { return console.log(err); }
          this.db.query('chlog/sysdoc', {
             include_docs: true
          }, function(err, sysdocs) {
@@ -105,14 +103,13 @@ module.exports = Backbone.View.extend({
                return Object.assign({}, result, value);
             });
             // get all posts from DB
-            dataUtil.getPosts(this.publicDB, function(err, posts) {
+            dataUtil.getPosts(this.appDB, function(err, posts) {
                var publicDoc = Generator.generateDoc(posts, settings);
-               publicDoc._id = '_design/chlog-public';
-               // get latest revision of _design/chlog-public
+               publicDoc._id = '_design/chlog';
+               // get latest revision of _design/chlog
                this.appDB.get(publicDoc._id, function(err, response) {
-                  publicDoc._rev = response._rev;
                   // update public site
-                  this.appDB.put(publicDoc);
+                  this.appDB.put(Object.assign({}, response, publicDoc));
                }.bind(this));
             }.bind(this));
          }.bind(this));
@@ -135,7 +132,6 @@ module.exports = Backbone.View.extend({
    },
    publishPost: function(postID, cb) {
       this.db.get(postID, function(err, doc) {
-         if (err) { return console.log(err); }
          // add published date to post
          doc.published = Date.now();
          // update post in database
@@ -143,7 +139,7 @@ module.exports = Backbone.View.extend({
 
          delete doc._rev;
          // push post to public database
-         this.publicDB.put(doc, function(err) {
+         this.appDB.put(doc, function(err) {
             cb(err, doc);
          });
       }.bind(this));

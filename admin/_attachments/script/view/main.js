@@ -14,7 +14,6 @@ module.exports = Backbone.View.extend({
       this.options = options;
 
       this.db = new PouchDB(this.options.adminDBName);
-      this.publicDB = new PouchDB(this.options.publicDBName);
    },
    render: function() {
       var mainTemplate = Handlebars.compile(this.mainTemplate);
@@ -23,7 +22,7 @@ module.exports = Backbone.View.extend({
       this.editorView = new EditorView({
          el: '#main',
          adminDBName: this.options.adminDBName,
-         publicDBName: this.options.publicDBName,
+         appDBName: this.options.appDBName,
          hostName: this.options.hostName
       });
 

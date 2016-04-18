@@ -20,7 +20,6 @@ module.exports = Backbone.View.extend({
 
       this.appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
       this.db = new PouchDB(this.options.adminDBName);
-      this.publicDB = new PouchDB(this.options.publicDBName);
 
       // get each sysdoc from adminDB
       this.db.query('chlog/sysdoc', {
@@ -117,10 +116,10 @@ module.exports = Backbone.View.extend({
             Object.assign(settings, sysdoc);
          });
          // get all posts from DB
-         dataUtil.getPosts(this.publicDB, function(err, posts) {
+         dataUtil.getPosts(this.appDB, function(err, posts) {
             var publicDoc = Generator.generateDoc(posts, settings);
-            publicDoc._id = '_design/chlog-public';
-            // get latest revision of _design/chlog-public
+            publicDoc._id = '_design/chlog';
+            // get latest revision of _design/chlog
             this.appDB.get(publicDoc._id, function(err, response) {
                publicDoc._rev = response._rev;
                // update public site

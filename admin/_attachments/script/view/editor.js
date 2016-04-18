@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
       this.options = options;
 
       this.db = new PouchDB(this.options.adminDBName);
-      this.publicDB = new PouchDB(this.options.publicDBName);
+      this.appDB = new PouchDB(this.options.appDBName);
 
       marked.setOptions({
          renderer: new marked.Renderer(),
@@ -170,10 +170,9 @@ module.exports = Backbone.View.extend({
          }.bind(this));
 
          // get latest revision of _design/chlog
-         this.publicDB.get('_design/chlog', function(err, response) {
-            this.publicDB.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
-               PouchDB.replicate(this.options.publicDBName, this.options.hostName + '/' + this.options.publicDBName);
-
+         this.appDB.get('_design/chlog', function(err, response) {
+            this.appDB.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
+               PouchDB.replicate(this.options.appDBName, this.options.hostName + '/' + this.options.appDBName);
             }.bind(this));
          }.bind(this));
       }.bind(this);
@@ -191,7 +190,7 @@ module.exports = Backbone.View.extend({
             };
 
             // append at drop point the markdown for the image
-            imgMarkdown = "![Alt text](/" + this.options.adminDBName + "/_design/chlog/image/" + file.name + " \"Optional title\")";
+            imgMarkdown = "![Alt text](image/" + file.name + " \"Optional title\")";
             pasteHtmlAtCaret(imgMarkdown, true);
          }
       }

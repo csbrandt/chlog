@@ -65,6 +65,9 @@ gulp.task 'copy-admin', ['clean', 'build'], ->
    gulp.src(config.inputDir + '/_attachments/index.html')
       .pipe gulp.dest(config.outputDir + '/_attachments')
 
+   gulp.src('./database/views/**/*')
+      .pipe gulp.dest(config.outputDir + '/views')
+
 gulp.task 'build-admin', ['clean'], ->
    bundle(config)
 

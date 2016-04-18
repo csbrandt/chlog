@@ -6,7 +6,6 @@ var SettingsView = require('./view/settings');
 
 var host = window.location.origin;
 var appDBName = 'chlog';
-var publicDBName = 'chlog-public';
 var adminDBName = 'chlog-admin';
 
 module.exports = Backbone.Router.extend({
@@ -27,7 +26,7 @@ module.exports = Backbone.Router.extend({
 
       // initial sync with host database
       // replicate to remote public from local
-      PouchDB.sync(publicDBName, host + '/' + publicDBName)
+      PouchDB.sync(appDBName, host + '/' + appDBName)
          .on('error', function(info) {
             // handle complete
          });
@@ -38,7 +37,7 @@ module.exports = Backbone.Router.extend({
          this.mainView = new MainView({
             el: 'body',
             adminDBName: adminDBName,
-            publicDBName: publicDBName,
+            appDBName: appDBName,
             hostName: host
          });
       }
@@ -51,7 +50,6 @@ module.exports = Backbone.Router.extend({
             el: '#main',
             appDBName: appDBName,
             adminDBName: adminDBName,
-            publicDBName: publicDBName,
             hostName: host
          });
       }
@@ -64,7 +62,6 @@ module.exports = Backbone.Router.extend({
             el: '#main',
             appDBName: appDBName,
             adminDBName: adminDBName,
-            publicDBName: publicDBName,
             hostName: host
          });
       }

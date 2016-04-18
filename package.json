@@ -5,8 +5,8 @@
   "scripts": {
     "setup": "npm install & npm install --prefix ./admin/_attachments",
     "push": "npm run pushDist && npm run pushDB",
-    "pushDist": "couchapp push dist/admin http://localhost:5984/chlog",
-    "pushDB": "couchapp push database http://localhost:5984/chlog-public && couchapp push database http://localhost:5984/chlog-admin"
+    "pushDist": "couchapp push dist/admin http://localhost:5984/chlog-admin",
+    "pushDB": "couchapp push database http://localhost:5984/chlog"
   },
   "author": "csbrandt",
   "license": "MIT",

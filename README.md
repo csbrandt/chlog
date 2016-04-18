@@ -14,11 +14,11 @@ Installation
 
 Push database views:
 
-    $ couchapp push database [hostname]/chlog-public && couchapp push database [hostname]/chlog-admin
+    $ couchapp push database [hostname]/chlog
 
 Push admin interface application:
 
-    $ couchapp push dist/admin [hostname]/chlog
+    $ couchapp push dist/admin [hostname]/chlog-admin
 
 Development
 ------------
