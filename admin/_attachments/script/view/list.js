@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var $ = window.jQuery = require('jquery');
+var _ = require('lodash');
 var Masonry = require('masonry-layout');
 var Handlebars = require('handlebars');
 var PouchDB = require('pouchdb');
@@ -106,11 +107,23 @@ module.exports = Backbone.View.extend({
             dataUtil.getPosts(this.appDB, function(err, posts) {
                var publicDoc = Generator.generateDoc(posts, settings);
                publicDoc._id = '_design/chlog';
-               // get latest revision of _design/chlog
-               this.appDB.get(publicDoc._id, function(err, response) {
-                  // update public site
-                  this.appDB.put(Object.assign({}, response, publicDoc));
+
+               var sequence = Promise.resolve();
+               // update public site
+               _.forEach(publicDoc._attachments, function(value, key) {
+                  sequence = sequence.then(function() {
+                     return this.appDB.get(publicDoc._id);
+                  }.bind(this)).then(function(doc) {
+                     return this.appDB.removeAttachment(publicDoc._id, key, doc._rev);
+                  }.bind(this)).then(function() {
+                     return this.appDB.get(publicDoc._id);
+                  }.bind(this)).then(function(doc) {
+                     return this.appDB.putAttachment(publicDoc._id, key, doc._rev, value.data, value.content_type);
+                  }.bind(this)).catch(function(err) {
+                     console.log(err);
+                  });
                }.bind(this));
+
             }.bind(this));
          }.bind(this));
       }.bind(this));

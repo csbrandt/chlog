@@ -6,7 +6,6 @@ var rss = require('rss');
 var tileTemplateSrc = require('../template/public/tiles.html');
 var postTileTemplateSrc = require('../template/public/posttile.html');
 var postTemplateSrc = require('../template/public/post.html');
-var rewrites = require('../../public-rewrites.json');
 var cssText = require('../../../dist/admin/_attachments/css/public/style.css');
 var POSTS_PER_PAGE = 8;
 var generator = exports;
@@ -26,8 +25,7 @@ generator.generateDoc = function(posts, settings) {
                type: 'application/rss+xml'
             })
          }
-      },
-      'rewrites': rewrites
+      }
    };
 
    Object.assign(doc._attachments, this.generateTiles(posts, settings));

@@ -160,19 +160,20 @@ module.exports = Backbone.View.extend({
 
       var onImageLoad = function(file) {
          // images are saved on the public and admin databases
+         var db = new PouchDB(this.options.hostName + '/' + this.options.adminDBName);
+         var appDB = new PouchDB(this.options.hostName + '/' + this.options.appDBName);
 
          // get latest revision of _design/chlog
-         this.db.get('_design/chlog', function(err, response) {
-            this.db.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
-               PouchDB.replicate(this.options.adminDBName, this.options.hostName + '/' + this.options.adminDBName);
-
+         db.get('_design/chlog', function(err, response) {
+            db.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
+               if (err) { return console.log(err); }
             }.bind(this));
          }.bind(this));
 
          // get latest revision of _design/chlog
-         this.appDB.get('_design/chlog', function(err, response) {
-            this.appDB.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
-               PouchDB.replicate(this.options.appDBName, this.options.hostName + '/' + this.options.appDBName);
+         appDB.get('_design/chlog', function(err, response) {
+            appDB.putAttachment('_design/chlog', 'image/' + file.name, response._rev, file, file.type, function(err, response) {
+               if (err) { return console.log(err); }
             }.bind(this));
          }.bind(this));
       }.bind(this);
