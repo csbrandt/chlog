@@ -100,31 +100,7 @@ module.exports = Backbone.View.extend({
          this.db.query('chlog/sysdoc', {
             include_docs: true
          }, function(err, sysdocs) {
-            var settings = _.reduce(_.map(sysdocs.rows, 'doc'), function(result, value) {
-               return Object.assign({}, result, value);
-            });
-            // get all posts from DB
-            dataUtil.getPosts(this.appDB, function(err, posts) {
-               var publicDoc = Generator.generateDoc(posts, settings);
-               publicDoc._id = '_design/chlog';
-
-               var sequence = Promise.resolve();
-               // update public site
-               _.forEach(publicDoc._attachments, function(value, key) {
-                  sequence = sequence.then(function() {
-                     return this.appDB.get(publicDoc._id);
-                  }.bind(this)).then(function(doc) {
-                     return this.appDB.removeAttachment(publicDoc._id, key, doc._rev);
-                  }.bind(this)).then(function() {
-                     return this.appDB.get(publicDoc._id);
-                  }.bind(this)).then(function(doc) {
-                     return this.appDB.putAttachment(publicDoc._id, key, doc._rev, value.data, value.content_type);
-                  }.bind(this)).catch(function(err) {
-                     console.log(err);
-                  });
-               }.bind(this));
-
-            }.bind(this));
+            dataUtil.updateSite(this.appDB, dataUtil.mergeSettings(sysdocs));
          }.bind(this));
       }.bind(this));
 

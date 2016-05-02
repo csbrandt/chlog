@@ -111,21 +111,7 @@ module.exports = Backbone.View.extend({
       this.db.query('chlog/sysdoc', {
          include_docs: true
       }, function(err, sysdocs) {
-         var settings = {};
-         dataUtil.mapDocs(sysdocs).forEach(function (sysdoc) {
-            Object.assign(settings, sysdoc);
-         });
-         // get all posts from DB
-         dataUtil.getPosts(this.appDB, function(err, posts) {
-            var publicDoc = Generator.generateDoc(posts, settings);
-            publicDoc._id = '_design/chlog';
-            // get latest revision of _design/chlog
-            this.appDB.get(publicDoc._id, function(err, response) {
-               publicDoc._rev = response._rev;
-               // update public site
-               this.appDB.put(publicDoc);
-            }.bind(this));
-         }.bind(this));
+         dataUtil.updateSite(this.appDB, dataUtil.mergeSettings(sysdocs));
       }.bind(this));
    }
 
